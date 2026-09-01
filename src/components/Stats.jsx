@@ -1,22 +1,21 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { FiEye, FiFilm, FiSmile, FiAward } from 'react-icons/fi'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const stats = [
-  { emoji: '👁️', number: '300K+', label: 'Social Media Views' },
-  { emoji: '🎬', number: '50+', label: 'Videos Completed' },
-  { emoji: '😊', number: '40+', label: 'Happy Clients' },
-  { emoji: '⭐', number: '3+', label: 'Years of Experience' },
+  { Icon: FiEye,   number: '300K+', label: 'Social Media Views'  },
+  { Icon: FiFilm,  number: '50+',   label: 'Videos Completed'    },
+  { Icon: FiSmile, number: '40+',   label: 'Happy Clients'       },
+  { Icon: FiAward, number: '3+',    label: 'Years of Experience' },
 ]
 
 function AnimatedNumber({ target }) {
-  const ref = useRef(null)
-  const [started, setStarted] = useState(false)
-
+  const ref         = useRef(null)
   const numericPart = parseInt(target.replace(/\D/g, ''), 10)
-  const suffix = target.replace(/[0-9]/g, '')
+  const suffix      = target.replace(/[0-9]/g, '')
 
   useEffect(() => {
     const trigger = ScrollTrigger.create({
@@ -24,19 +23,15 @@ function AnimatedNumber({ target }) {
       start: 'top 85%',
       once: true,
       onEnter: () => {
-        setStarted(true)
         const obj = { val: 0 }
         gsap.to(obj, {
-          val: numericPart,
-          duration: 2,
-          ease: 'power2.out',
+          val: numericPart, duration: 2, ease: 'power2.out',
           onUpdate: () => {
-            if (ref.current) {
+            if (ref.current)
               ref.current.textContent = Math.round(obj.val).toLocaleString() + suffix
-            }
-          }
+          },
         })
-      }
+      },
     })
     return () => trigger.kill()
   }, [numericPart, suffix])
@@ -46,19 +41,16 @@ function AnimatedNumber({ target }) {
 
 export default function Stats() {
   const sectionRef = useRef(null)
-  const itemsRef = useRef([])
+  const itemsRef   = useRef([])
 
   useEffect(() => {
     const ctx = gsap.context(() => {
       itemsRef.current.forEach((item, i) => {
         gsap.fromTo(item,
           { opacity: 0, y: 30 },
-          {
-            opacity: 1, y: 0, duration: 0.6, ease: 'power3.out',
+          { opacity: 1, y: 0, duration: 0.6, ease: 'power3.out',
             delay: i * 0.1,
-            scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true }
-          }
-        )
+            scrollTrigger: { trigger: sectionRef.current, start: 'top 80%', once: true } })
       })
     }, sectionRef)
     return () => ctx.revert()
@@ -69,13 +61,9 @@ export default function Stats() {
       <div className="container">
         <div className="stats-grid">
           {stats.map((s, i) => (
-            <div
-              key={s.label}
-              className="stat-item"
-              ref={el => (itemsRef.current[i] = el)}
-              style={{ opacity: 0 }}
-            >
-              <span className="stat-emoji">{s.emoji}</span>
+            <div key={s.label} className="stat-item"
+              ref={el => (itemsRef.current[i] = el)} style={{ opacity: 0 }}>
+              <s.Icon className="stat-ri-icon" />
               <AnimatedNumber target={s.number} />
               <span className="stat-label">{s.label}</span>
             </div>
