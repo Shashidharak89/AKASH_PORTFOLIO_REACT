@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { FiArrowRight, FiCamera, FiAward, FiInstagram } from 'react-icons/fi'
+import { FiArrowRight, FiCamera, FiAward, FiInstagram, FiChevronDown } from 'react-icons/fi'
 
 import bg1 from '../assets/images/bg1.jpeg'
 import bg2 from '../assets/images/bg2.jpeg'
@@ -25,7 +25,37 @@ export default function About() {
   const cardsRef     = useRef([])
   const textRef      = useRef(null)
   const [activeIdx, setActiveIdx] = useState(0)
+  const [showIdleHint, setShowIdleHint] = useState(false)
+  const idleTimerRef = useRef(null)
+  const isSectionActiveRef = useRef(false)
 
+  /* ── Idle Scroll Suggestion Timer ────────────────────────────── */
+  const resetIdleTimer = () => {
+    setShowIdleHint(false)
+    if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+
+    if (isSectionActiveRef.current) {
+      idleTimerRef.current = setTimeout(() => {
+        setShowIdleHint(true)
+      }, 5000) // 5 seconds idle threshold
+    }
+  }
+
+  useEffect(() => {
+    const handleActivity = () => resetIdleTimer()
+    window.addEventListener('scroll', handleActivity, { passive: true })
+    window.addEventListener('mousemove', handleActivity, { passive: true })
+    window.addEventListener('touchstart', handleActivity, { passive: true })
+
+    return () => {
+      window.removeEventListener('scroll', handleActivity)
+      window.removeEventListener('mousemove', handleActivity)
+      window.removeEventListener('touchstart', handleActivity)
+      if (idleTimerRef.current) clearTimeout(idleTimerRef.current)
+    }
+  }, [])
+
+  /* ── GSAP Horizontal Scroll Pinning ──────────────────────────── */
   useEffect(() => {
     const ctx = gsap.context(() => {
       const pinWrap = pinWrapRef.current
@@ -49,12 +79,17 @@ export default function About() {
           scrub: 1,
           start: 'top top',
           end: `+=${cards.length * 100}%`,
+          onToggle: (self) => {
+            isSectionActiveRef.current = self.isActive
+            resetIdleTimer()
+          },
           onUpdate: (self) => {
             const idx = Math.min(
               cards.length - 1,
               Math.floor(self.progress * cards.length)
             )
             setActiveIdx(idx)
+            resetIdleTimer()
           },
         },
       })
@@ -145,6 +180,12 @@ export default function About() {
               className={`stage-dot${activeIdx === i ? ' active' : ''}`}
             />
           ))}
+        </div>
+
+        {/* ── Idle Scroll Suggestion Badge (5s Inactivity) ── */}
+        <div className={`idle-scroll-hint${showIdleHint ? ' visible' : ''}`}>
+          <span>Scroll down for next frame</span>
+          <FiChevronDown className="bounce-chevron" />
         </div>
       </div>
 
