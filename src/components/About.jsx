@@ -168,7 +168,7 @@ export default function About() {
 
             <p className="about-body">
               From buses and vehicles to housewarming ceremonies, poojas, events, and special
-              moments — every frame is edited with creativity and passion. With 300K+ views
+              moments — every frame is edited with creativity and passion. With 500K+ views
               across social media, I'm on a journey to 1 million.
             </p>
           </div>
@@ -184,7 +184,7 @@ export default function About() {
             <div className="highlight-item">
               <FiAward className="hi-icon" />
               <div>
-                <span className="hi-title">300K+ Views</span>
+                <span className="hi-title">500K+ Views</span>
                 <span className="hi-sub">Growing towards 1 million</span>
               </div>
             </div>

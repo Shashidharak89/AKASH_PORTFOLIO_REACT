@@ -17,16 +17,16 @@ import reel10 from '../assets/reels/reel10.mp4'
 gsap.registerPlugin(ScrollTrigger)
 
 const reels = [
-  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured', type: 'featured' },
-  { src: reel2,  label: 'Bus Edit',          badge: 'Popular',  type: 'tall'     },
-  { src: reel3,  label: 'Vehicle Edit',      badge: '',         type: 'standard' },
-  { src: reel4,  label: 'Event Highlights',  badge: '',         type: 'wide'     },
-  { src: reel5,  label: 'Housewarming',      badge: '300K Views',type: 'wide'    },
-  { src: reel6,  label: 'Creative Cut',      badge: 'New',      type: 'tall'     },
-  { src: reel7,  label: 'Pooja Ceremony',    badge: '',         type: 'standard' },
-  { src: reel8,  label: 'Creative Reel',     badge: 'Trending', type: 'featured' },
-  { src: reel9,  label: 'Event Edit',        badge: '',         type: 'standard' },
-  { src: reel10, label: 'Special Reel',      badge: 'New',      type: 'wide'     },
+  { src: reel1,  type: 'featured' },
+  { src: reel2,  type: 'tall'     },
+  { src: reel3,  type: 'standard' },
+  { src: reel4,  type: 'wide'     },
+  { src: reel5,  type: 'wide'     },
+  { src: reel6,  type: 'tall'     },
+  { src: reel7,  type: 'standard' },
+  { src: reel8,  type: 'featured' },
+  { src: reel9,  type: 'standard' },
+  { src: reel10, type: 'wide'     },
 ]
 
 /* ─── Customized Bento Reel Card ─────────────────────────────── */
@@ -108,15 +108,6 @@ function ReelCard({ reel, index, onPlay }) {
         playsInline
         preload="metadata"
       />
-
-      <div className="reel-overlay">
-        <div className="reel-top">
-          {reel.badge && <span className="reel-badge">{reel.badge}</span>}
-        </div>
-        <div className="reel-bottom">
-          <span className="reel-label">{reel.label}</span>
-        </div>
-      </div>
 
       {/* Expand hint icon on hover */}
       <div className="reel-play-btn" aria-label="Expand Reel">

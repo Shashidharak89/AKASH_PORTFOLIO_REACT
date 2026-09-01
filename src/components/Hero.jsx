@@ -71,16 +71,16 @@ export default function Hero() {
 
           <p className="hero-description" ref={descRef} style={{ opacity: 0 }}>
             Based in Udupi, Karnataka. Specializing in bus edits, vehicle videos,
-            housewarming ceremonies, poojas, events &amp; cinematic reels with 300K+ social media views.
+            housewarming ceremonies, poojas, events &amp; cinematic reels with 500K+ social media views.
           </p>
 
           <div className="hero-stats" ref={statsRef} style={{ opacity: 0 }}>
             <div className="hero-stat">
-              <span className="hero-stat-number">300K+</span>
+              <span className="hero-stat-number">500K+</span>
               <span className="hero-stat-label">Views</span>
             </div>
             <div className="hero-stat">
-              <span className="hero-stat-number">50+</span>
+              <span className="hero-stat-number">140+</span>
               <span className="hero-stat-label">Projects</span>
             </div>
             <div className="hero-stat">
@@ -115,7 +115,7 @@ export default function Hero() {
 
             <div className="hero-floating-tag tag--views" ref={addTag} style={{ opacity: 0 }}>
               <FiFilm className="tag-ri-icon" />
-              300K+ Views
+              500K+ Views
             </div>
             <div className="hero-floating-tag tag--location" ref={addTag} style={{ opacity: 0 }}>
               <FiMapPin className="tag-ri-icon" />

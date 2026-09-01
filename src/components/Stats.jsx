@@ -6,9 +6,9 @@ import { FiEye, FiFilm, FiSmile, FiAward } from 'react-icons/fi'
 gsap.registerPlugin(ScrollTrigger)
 
 const stats = [
-  { Icon: FiEye,   number: '300K+', label: 'Social Media Views'  },
-  { Icon: FiFilm,  number: '50+',   label: 'Videos Completed'    },
-  { Icon: FiSmile, number: '40+',   label: 'Happy Clients'       },
+  { Icon: FiEye,   number: '500K+', label: 'Social Media Views'  },
+  { Icon: FiFilm,  number: '140+',  label: 'Videos Completed'    },
+  { Icon: FiSmile, number: '100+',  label: 'Happy Clients'       },
   { Icon: FiAward, number: '3+',    label: 'Years of Experience' },
 ]
 
