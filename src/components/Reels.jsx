@@ -1,28 +1,32 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { FiX, FiMaximize2 } from 'react-icons/fi'
 
-// Import all reels
-import reel1 from '../assets/reels/reel1.mp4'
-import reel2 from '../assets/reels/reel2.mp4'
-import reel3 from '../assets/reels/reel3.mp4'
-import reel4 from '../assets/reels/reel4.mp4'
-import reel5 from '../assets/reels/reel5.mp4'
-import reel7 from '../assets/reels/reel7.mp4'
-import reel8 from '../assets/reels/reel8.mp4'
-import reel9 from '../assets/reels/reel9.mp4'
+import reel1  from '../assets/reels/reel1.mp4'
+import reel2  from '../assets/reels/reel2.mp4'
+import reel3  from '../assets/reels/reel3.mp4'
+import reel4  from '../assets/reels/reel4.mp4'
+import reel5  from '../assets/reels/reel5.mp4'
+import reel6  from '../assets/reels/reel6.mp4'
+import reel7  from '../assets/reels/reel7.mp4'
+import reel8  from '../assets/reels/reel8.mp4'
+import reel9  from '../assets/reels/reel9.mp4'
+import reel10 from '../assets/reels/reel10.mp4'
 
 gsap.registerPlugin(ScrollTrigger)
 
 const reels = [
-  { src: reel1, label: 'Cinematic Reel', badge: 'Featured', featured: true },
-  { src: reel2, label: 'Bus Edit',        badge: 'Popular'              },
-  { src: reel3, label: 'Vehicle Edit',    badge: ''                     },
-  { src: reel4, label: 'Event Highlights',badge: ''                     },
-  { src: reel5, label: 'Housewarming',    badge: '300K Views', wide: true },
-  { src: reel7, label: 'Pooja Ceremony',  badge: ''                     },
-  { src: reel8, label: 'Creative Reel',   badge: 'Trending'             },
-  { src: reel9, label: 'Event Edit',      badge: ''                     },
+  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured',  featured: true  },
+  { src: reel2,  label: 'Bus Edit',          badge: 'Popular'                    },
+  { src: reel3,  label: 'Vehicle Edit',      badge: ''                           },
+  { src: reel4,  label: 'Event Highlights',  badge: ''                           },
+  { src: reel5,  label: 'Housewarming',      badge: '300K Views', wide: true     },
+  { src: reel6,  label: 'Creative Cut',      badge: 'New'                        },
+  { src: reel7,  label: 'Pooja Ceremony',    badge: ''                           },
+  { src: reel8,  label: 'Creative Reel',     badge: 'Trending'                   },
+  { src: reel9,  label: 'Event Edit',        badge: ''                           },
+  { src: reel10, label: 'Special Reel',      badge: 'New'                        },
 ]
 
 /* ─── Single reel card ──────────────────────────────────────── */
@@ -32,8 +36,7 @@ function ReelCard({ reel, index, onPlay }) {
 
   /* GSAP entrance */
   useEffect(() => {
-    gsap.fromTo(
-      cardRef.current,
+    gsap.fromTo(cardRef.current,
       { opacity: 0, y: 40, scale: 0.95 },
       {
         opacity: 1, y: 0, scale: 1,
@@ -45,22 +48,17 @@ function ReelCard({ reel, index, onPlay }) {
     )
   }, [index])
 
-  /* IntersectionObserver — auto-play when ≥40% visible, pause otherwise */
+  /* IntersectionObserver — auto-play when ≥40% visible */
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
-          video.play().catch(() => {})
-        } else {
-          video.pause()
-        }
+        if (entry.isIntersecting) video.play().catch(() => {})
+        else                      video.pause()
       },
-      { threshold: 0.4 }   // fire when 40 % of the card is on screen
+      { threshold: 0.4 }
     )
-
     observer.observe(video)
     return () => observer.disconnect()
   }, [])
@@ -91,9 +89,9 @@ function ReelCard({ reel, index, onPlay }) {
         </div>
       </div>
 
-      {/* Play icon shown on hover (via CSS) */}
-      <div className="reel-play-btn">
-        <div className="play-arrow" />
+      {/* Expand hint on hover */}
+      <div className="reel-play-btn" aria-hidden="true">
+        <FiMaximize2 className="reel-expand-icon" />
       </div>
     </div>
   )
@@ -102,14 +100,15 @@ function ReelCard({ reel, index, onPlay }) {
 /* ─── Section ───────────────────────────────────────────────── */
 export default function Reels() {
   const [activeVideo, setActiveVideo] = useState(null)
-  const sectionRef  = useRef(null)
-  const headerRef   = useRef(null)
+  const sectionRef    = useRef(null)
+  const headerRef     = useRef(null)
+  const modalRef      = useRef(null)
   const modalVideoRef = useRef(null)
+  const closeBtnRef   = useRef(null)
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(
-        headerRef.current,
+      gsap.fromTo(headerRef.current,
         { opacity: 0, y: 40 },
         {
           opacity: 1, y: 0, duration: 0.8, ease: 'power3.out',
@@ -127,10 +126,38 @@ export default function Reels() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  const handlePlay  = (src) => setActiveVideo(src)
+  /* Animate modal open */
+  useEffect(() => {
+    if (activeVideo && modalRef.current) {
+      gsap.fromTo(modalRef.current,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.3, ease: 'power2.out' }
+      )
+      gsap.fromTo(modalRef.current.querySelector('.video-modal-content'),
+        { scale: 0.88, y: 30 },
+        { scale: 1,    y: 0,  duration: 0.45, ease: 'back.out(1.4)' }
+      )
+      // Animate close button in
+      if (closeBtnRef.current) {
+        gsap.fromTo(closeBtnRef.current,
+          { opacity: 0, scale: 0.5, rotate: -90 },
+          { opacity: 1, scale: 1,   rotate: 0, duration: 0.4, delay: 0.2, ease: 'back.out(2)' }
+        )
+      }
+    }
+  }, [activeVideo])
+
+  const handlePlay = (src) => setActiveVideo(src)
+
   const handleClose = () => {
-    if (modalVideoRef.current) modalVideoRef.current.pause()
-    setActiveVideo(null)
+    if (!modalRef.current) { setActiveVideo(null); return }
+    gsap.to(modalRef.current, {
+      opacity: 0, duration: 0.25, ease: 'power2.in',
+      onComplete: () => {
+        if (modalVideoRef.current) modalVideoRef.current.pause()
+        setActiveVideo(null)
+      }
+    })
   }
 
   return (
@@ -152,15 +179,23 @@ export default function Reels() {
       </div>
 
       {/* ── Video Modal ── */}
-      <div
-        className={`video-modal-backdrop${activeVideo ? ' open' : ''}`}
-        onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
-      >
-        <div className="video-modal-content">
-          <button className="modal-close-btn" onClick={handleClose} aria-label="Close video">
-            ✕
-          </button>
-          {activeVideo && (
+      {activeVideo && (
+        <div
+          className="video-modal-backdrop open"
+          ref={modalRef}
+          onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
+        >
+          <div className="video-modal-content">
+            {/* Prominent close button */}
+            <button
+              ref={closeBtnRef}
+              className="modal-close-btn"
+              onClick={handleClose}
+              aria-label="Close video"
+            >
+              <FiX className="modal-close-icon" />
+            </button>
+
             <video
               ref={modalVideoRef}
               src={activeVideo}
@@ -168,9 +203,9 @@ export default function Reels() {
               autoPlay
               playsInline
             />
-          )}
+          </div>
         </div>
-      </div>
+      )}
     </section>
   )
 }
