@@ -1695,14 +1695,20 @@ a.contact-card-value:hover { color: var(--color-gold); }
    FOOTER
    ============================================ */
 .footer {
-  padding: 32px var(--container-px);
+  padding: 36px var(--container-px);
   border-top: var(--border-subtle);
   display: flex;
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 20px;
   background: var(--color-bg-secondary);
+}
+
+.footer-left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .footer-logo {
@@ -1719,14 +1725,70 @@ a.contact-card-value:hover { color: var(--color-gold); }
 .footer-copy {
   font-size: 0.74rem;
   color: var(--color-text-muted);
-  text-align: center;
+}
+
+.footer-center {
+  display: flex;
+  align-items: center;
 }
 
 .footer-tagline {
   font-family: var(--font-accent);
   font-style: italic;
-  font-size: 0.8rem;
+  font-size: 0.82rem;
   color: var(--color-text-muted);
+}
+
+.footer-right {
+  display: flex;
+  align-items: center;
+}
+
+.developer-credit {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+.dev-caption {
+  font-size: 0.68rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}
+
+.developer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+  text-decoration: none;
+  padding: 5px 12px;
+  border-radius: 20px;
+  background: rgba(212, 168, 75, 0.08);
+  border: var(--border-gold);
+  transition: all var(--transition-mid);
+}
+
+.developer-link:hover {
+  background: rgba(212, 168, 75, 0.18);
+  color: var(--color-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(212, 168, 75, 0.15);
+}
+
+.dev-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-gold);
+}
+
+.dev-ext-icon {
+  width: 12px;
+  height: 12px;
+  opacity: 0.7;
 }
 
 /* ============================================
@@ -1841,7 +1903,8 @@ a.contact-card-value:hover { color: var(--color-gold); }
   .contact-cta-block { padding: 36px 24px; }
 
   /* Footer */
-  .footer { flex-direction: column; text-align: center; gap: 10px; }
+  .footer { flex-direction: column; text-align: center; gap: 16px; align-items: center; }
+  .developer-credit { align-items: center; }
 }
 
 /* ============================================
