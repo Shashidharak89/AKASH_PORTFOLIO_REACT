@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
-import profileImg from '../assets/hero.png'
+import profileImg from '../assets/images/profile.png'
 import bgImg from '../assets/images/bg1.jpeg'
 
 export default function Hero() {
@@ -48,12 +48,12 @@ export default function Hero() {
       '-=0.3'
     )
     .fromTo(imgRef.current,
-      { opacity: 0, scale: 0.9, y: 40 },
-      { opacity: 1, scale: 1, y: 0, duration: 1, ease: 'power3.out' },
+      { opacity: 0, scale: 0.85, y: 40 },
+      { opacity: 1, scale: 1, y: 0, duration: 1.1, ease: 'power3.out' },
       '-=1.0'
     )
     .fromTo(tagsRef.current,
-      { opacity: 0, scale: 0.8 },
+      { opacity: 0, scale: 0.7 },
       { opacity: 1, scale: 1, duration: 0.5, stagger: 0.15, ease: 'back.out(1.7)' },
       '-=0.5'
     )
@@ -118,10 +118,12 @@ export default function Hero() {
           </div>
 
           <div className="hero-actions" ref={actionsRef} style={{ opacity: 0 }}>
-            <a href="#reels" className="btn-primary" onClick={e => { e.preventDefault(); document.querySelector('#reels').scrollIntoView({ behavior: 'smooth' }) }}>
+            <a href="#reels" className="btn-primary"
+              onClick={e => { e.preventDefault(); document.querySelector('#reels').scrollIntoView({ behavior: 'smooth' }) }}>
               ▶ Watch My Work
             </a>
-            <a href="#contact" className="btn-secondary" onClick={e => { e.preventDefault(); document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' }) }}>
+            <a href="#contact" className="btn-secondary"
+              onClick={e => { e.preventDefault(); document.querySelector('#contact').scrollIntoView({ behavior: 'smooth' }) }}>
               Get in Touch
             </a>
           </div>
@@ -130,11 +132,15 @@ export default function Hero() {
         {/* Visual */}
         <div className="hero-visual">
           <div className="hero-profile-wrapper" ref={imgRef} style={{ opacity: 0 }}>
+            {/* Outer spinning ring */}
             <div className="hero-orbit" />
+            {/* Second decorative ring */}
+            <div className="hero-orbit hero-orbit--slow" />
+
             <img
               src={profileImg}
               alt="Akash Kulal - Creative Video Editor"
-              className="hero-profile-img"
+              className="hero-profile-img hero-profile-circle"
             />
             <div className="hero-profile-glow" />
 

@@ -564,8 +564,8 @@ body {
 
 .hero-profile-wrapper {
   position: relative;
-  width: 320px;
-  height: 400px;
+  width: 340px;
+  height: 340px;
 }
 
 .hero-orbit {
@@ -573,20 +573,36 @@ body {
   inset: -30px;
   border-radius: 50%;
   border: 1px solid rgba(212, 168, 75, 0.15);
-  animation: orbit-spin 25s linear infinite;
+  animation: orbit-spin 22s linear infinite;
+  pointer-events: none;
 }
 
 .hero-orbit::before {
   content: '';
   position: absolute;
-  top: -4px;
+  top: -5px;
   left: 50%;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   background: var(--color-gold);
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 16px 4px var(--color-gold-glow);
+  box-shadow: 0 0 20px 6px var(--color-gold-glow);
+}
+
+/* Second slower orbit ring */
+.hero-orbit--slow {
+  inset: -50px;
+  border-color: rgba(212, 168, 75, 0.07);
+  animation-duration: 40s;
+  animation-direction: reverse;
+}
+
+.hero-orbit--slow::before {
+  background: rgba(212, 168, 75, 0.5);
+  width: 7px;
+  height: 7px;
+  box-shadow: 0 0 12px 3px rgba(212, 168, 75, 0.3);
 }
 
 @keyframes orbit-spin {
@@ -604,6 +620,18 @@ body {
   position: relative;
   z-index: 1;
   display: block;
+}
+
+/* Circle variant — for pre-cropped circular profile images */
+.hero-profile-circle {
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid rgba(212, 168, 75, 0.35);
+  box-shadow:
+    0 0 0 6px rgba(212, 168, 75, 0.07),
+    0 0 0 12px rgba(212, 168, 75, 0.04),
+    0 40px 80px rgba(0,0,0,0.7),
+    0 0 80px rgba(212, 168, 75, 0.12);
 }
 
 .hero-profile-glow {
@@ -785,12 +813,16 @@ body {
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 52%;
-  height: 55%;
+  width: 48%;
+  height: 48%;
   object-fit: cover;
-  border-radius: 14px;
-  border: 2px solid rgba(212, 168, 75, 0.2);
-  box-shadow: -10px -10px 0 rgba(212, 168, 75, 0.06), 0 20px 40px rgba(0,0,0,0.4);
+  /* Circle profile — show as circle with gold ring */
+  border-radius: 50%;
+  border: 3px solid rgba(212, 168, 75, 0.35);
+  box-shadow:
+    0 0 0 6px rgba(212, 168, 75, 0.06),
+    -10px -10px 0 rgba(212, 168, 75, 0.05),
+    0 20px 40px rgba(0,0,0,0.5);
 }
 
 .about-years-badge {
@@ -1524,7 +1556,7 @@ a.ci-value:hover { color: var(--color-gold); }
     gap: 60px;
   }
   .hero-visual { order: -1; }
-  .hero-profile-wrapper { width: 240px; height: 300px; }
+  .hero-profile-wrapper { width: 260px; height: 260px; }
   .hero-stats { justify-content: center; }
   .hero-actions { justify-content: center; }
   .hero-tagline, .hero-description { margin: 0 auto; }
