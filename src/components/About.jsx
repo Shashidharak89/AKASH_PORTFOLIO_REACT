@@ -11,122 +11,154 @@ import bg5 from '../assets/images/bg5.jpeg'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const SLIDES = [
-  { src: bg1, caption: 'Cinematic Vehicle Shots' },
-  { src: bg2, caption: 'Bus Edit — Mahaveera Express' },
-  { src: bg3, caption: 'Rally Car — Cinematic Dust' },
-  { src: bg4, caption: 'Nighttime Bus Frames' },
-  { src: bg5, caption: 'Forest Luxury — BMW Series' },
+const GALLERY_IMAGES = [
+  { src: bg1, alt: 'Cinematic Bus Edit Frame' },
+  { src: bg2, alt: 'Mahaveera Express Bus Edit' },
+  { src: bg3, alt: 'Rally Car Drift Frame' },
+  { src: bg4, alt: 'Night Bus Edit Frame' },
+  { src: bg5, alt: 'BMW Forest Cinematic Frame' },
 ]
-
-const INTERVAL = 3000   // ms between slides
 
 export default function About() {
   const sectionRef   = useRef(null)
+  const pinWrapRef   = useRef(null)
+  const cardsRef     = useRef([])
   const textRef      = useRef(null)
-  const sliderRef    = useRef(null)
-  const slidesRef    = useRef([])   // individual slide img refs
-  const dotsRef      = useRef([])
-  const captionRef   = useRef(null)
-  const [current, setCurrent] = useState(0)
-  const currentRef   = useRef(0)
-  const timerRef     = useRef(null)
-  const animatingRef = useRef(false)
+  const [activeIdx, setActiveIdx] = useState(0)
 
-  /* ── Section entrance ──────────────────────────────────────── */
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.fromTo(textRef.current.children,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1, y: 0, stagger: 0.12, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 72%', once: true },
+      const pinWrap = pinWrapRef.current
+      const cards   = cardsRef.current.filter(Boolean)
+      if (!pinWrap || cards.length === 0) return
+
+      // Set initial positions: Card 0 is centered, Cards 1..N are offscreen to the right
+      cards.forEach((card, idx) => {
+        if (idx === 0) {
+          gsap.set(card, { xPercent: 0, opacity: 1, scale: 1, zIndex: 10 })
+        } else {
+          gsap.set(card, { xPercent: 120, opacity: 0, scale: 0.9, zIndex: 10 - idx })
         }
-      )
-      gsap.fromTo(sliderRef.current,
-        { opacity: 0, x: 60, scale: 0.96 },
-        {
-          opacity: 1, x: 0, scale: 1, duration: 1, ease: 'power3.out',
-          scrollTrigger: { trigger: sectionRef.current, start: 'top 68%', once: true },
-        }
-      )
+      })
+
+      // Timeline scrubbed to scroll position
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: pinWrap,
+          pin: true,
+          scrub: 1,
+          start: 'top top',
+          end: `+=${cards.length * 100}%`,
+          onUpdate: (self) => {
+            const idx = Math.min(
+              cards.length - 1,
+              Math.floor(self.progress * cards.length)
+            )
+            setActiveIdx(idx)
+          },
+        },
+      })
+
+      // For each card transition: current leaves left, next arrives from right
+      for (let i = 0; i < cards.length - 1; i++) {
+        const curr = cards[i]
+        const next = cards[i + 1]
+
+        tl.to(curr, {
+          xPercent: -120,
+          opacity: 0,
+          scale: 0.9,
+          duration: 1,
+          ease: 'power2.inOut',
+        }, i)
+        .to(next, {
+          xPercent: 0,
+          opacity: 1,
+          scale: 1,
+          duration: 1,
+          ease: 'power2.inOut',
+        }, i)
+      }
+
+      // Text section entrance reveal below gallery
+      if (textRef.current) {
+        gsap.fromTo(
+          textRef.current.children,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            stagger: 0.12,
+            duration: 0.8,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: textRef.current,
+              start: 'top 80%',
+              once: true,
+            },
+          }
+        )
+      }
     }, sectionRef)
+
     return () => ctx.revert()
   }, [])
 
-  /* ── Slide transition ──────────────────────────────────────── */
-  const goTo = (next) => {
-    if (animatingRef.current) return
-    animatingRef.current = true
-
-    const prev = currentRef.current
-    if (next === prev) { animatingRef.current = false; return }
-
-    const prevEl    = slidesRef.current[prev]
-    const nextEl    = slidesRef.current[next]
-    const prevDot   = dotsRef.current[prev]
-    const nextDot   = dotsRef.current[next]
-    const caption   = captionRef.current
-
-    // Stack next slide on top, slide in
-    gsap.set(nextEl, { zIndex: 2, x: next > prev ? '100%' : '-100%', opacity: 1 })
-    gsap.set(prevEl, { zIndex: 1 })
-
-    const tl = gsap.timeline({
-      onComplete: () => {
-        gsap.set(prevEl, { zIndex: 0, x: 0 })
-        currentRef.current  = next
-        setCurrent(next)
-        animatingRef.current = false
-      }
-    })
-
-    // Slide images
-    tl.to(prevEl,    { x: next > prev ? '-100%' : '100%', duration: 0.75, ease: 'power3.inOut' }, 0)
-      .to(nextEl,    { x: '0%',                            duration: 0.75, ease: 'power3.inOut' }, 0)
-      // Ken Burns zoom on incoming slide
-      .fromTo(nextEl, { scale: 1.08 }, { scale: 1, duration: 1.2, ease: 'power2.out' }, 0)
-      // Caption fade
-      .to(caption,   { opacity: 0, y: -10, duration: 0.25 }, 0)
-      .to(caption,   { opacity: 1, y: 0,   duration: 0.35 }, 0.5)
-      // Active dot pulse
-      .to(prevDot,   { width: 8,  backgroundColor: 'rgba(212,168,75,0.3)', duration: 0.3 }, 0)
-      .to(nextDot,   { width: 28, backgroundColor: 'var(--color-gold)',    duration: 0.3 }, 0)
-  }
-
-  /* ── Auto-advance ──────────────────────────────────────────── */
-  useEffect(() => {
-    const advance = () => {
-      const next = (currentRef.current + 1) % SLIDES.length
-      goTo(next)
-    }
-    timerRef.current = setInterval(advance, INTERVAL)
-    return () => clearInterval(timerRef.current)
-  }, [])
-
-  const handleDot = (i) => {
-    clearInterval(timerRef.current)
-    goTo(i)
-    timerRef.current = setInterval(
-      () => { const next = (currentRef.current + 1) % SLIDES.length; goTo(next) },
-      INTERVAL
-    )
-  }
-
   return (
     <section className="about" id="about" ref={sectionRef}>
+
+      {/* ── 1. One-by-One Pinned Card Slider (Scroll Driven) ── */}
+      <div className="about-gallery-pinned" ref={pinWrapRef}>
+        <div className="about-gallery-header">
+          <div className="section-label">Visual Journey</div>
+          <h2 className="section-title">
+            Featured <span className="gold-text">Cinematic Frames</span>
+          </h2>
+          <div className="card-counter-pill">
+            <span>0{activeIdx + 1}</span> / <span>0{GALLERY_IMAGES.length}</span>
+          </div>
+        </div>
+
+        <div className="about-card-stage">
+          {GALLERY_IMAGES.map((img, i) => (
+            <div
+              key={i}
+              className="about-single-card"
+              ref={el => (cardsRef.current[i] = el)}
+            >
+              <img
+                src={img.src}
+                alt={img.alt}
+                className="about-card-img"
+              />
+              <div className="about-card-glow" />
+              <div className="about-card-frame" />
+            </div>
+          ))}
+        </div>
+
+        {/* Scroll Progress Bar / Dots */}
+        <div className="about-stage-dots">
+          {GALLERY_IMAGES.map((_, i) => (
+            <div
+              key={i}
+              className={`stage-dot${activeIdx === i ? ' active' : ''}`}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* ── 2. About Me Details Block (Below Gallery) ────── */}
       <div className="container">
-        <div className="about-grid">
+        <div className="about-details-block" ref={textRef}>
+          <div className="section-label" style={{ justifyContent: 'center' }}>About Me</div>
 
-          {/* ── Text Column ─────────────────────────────── */}
-          <div className="about-text-col" ref={textRef}>
-            <div className="section-label">About Me</div>
+          <h2 className="section-title" style={{ textAlign: 'center' }}>
+            I Don't Just Edit Videos —<br />
+            I <span className="gold-text">Tell Stories</span>
+          </h2>
 
-            <h2 className="section-title">
-              I Don't Just Edit Videos —<br />
-              I <span className="gold-text">Tell Stories</span>
-            </h2>
-
+          <div className="about-text-content">
             <p className="about-body">
               I'm <strong>Akash Kulal</strong>, a creative videographer and video editor from
               Udupi, Karnataka. I capture more than just videos — I tell stories through creative
@@ -139,92 +171,48 @@ export default function About() {
               moments — every frame is edited with creativity and passion. With 300K+ views
               across social media, I'm on a journey to 1 million.
             </p>
+          </div>
 
-            <div className="about-highlights">
-              <div className="highlight-item">
-                <FiCamera className="hi-icon" />
-                <div>
-                  <span className="hi-title">Cinematic Quality</span>
-                  <span className="hi-sub">Professional color grading &amp; transitions</span>
-                </div>
-              </div>
-              <div className="highlight-item">
-                <FiAward className="hi-icon" />
-                <div>
-                  <span className="hi-title">300K+ Views</span>
-                  <span className="hi-sub">Growing towards 1 million</span>
-                </div>
-              </div>
-              <div className="highlight-item">
-                <FiInstagram className="hi-icon" />
-                <div>
-                  <span className="hi-title">@_akxsh__07</span>
-                  <span className="hi-sub">Follow on Instagram</span>
-                </div>
+          <div className="about-highlights-row">
+            <div className="highlight-item">
+              <FiCamera className="hi-icon" />
+              <div>
+                <span className="hi-title">Cinematic Quality</span>
+                <span className="hi-sub">Professional color grading &amp; transitions</span>
               </div>
             </div>
+            <div className="highlight-item">
+              <FiAward className="hi-icon" />
+              <div>
+                <span className="hi-title">300K+ Views</span>
+                <span className="hi-sub">Growing towards 1 million</span>
+              </div>
+            </div>
+            <div className="highlight-item">
+              <FiInstagram className="hi-icon" />
+              <div>
+                <span className="hi-title">@_akxsh__07</span>
+                <span className="hi-sub">Follow on Instagram</span>
+              </div>
+            </div>
+          </div>
 
+          <div className="about-cta-wrapper">
             <a
               href="#reels"
               className="btn-primary about-cta"
-              onClick={e => { e.preventDefault(); document.querySelector('#reels')?.scrollIntoView({ behavior: 'smooth' }) }}
+              onClick={e => {
+                e.preventDefault()
+                document.querySelector('#reels')?.scrollIntoView({ behavior: 'smooth' })
+              }}
             >
               <FiArrowRight className="btn-icon" />
-              See My Work
+              Watch My Work
             </a>
           </div>
-
-          {/* ── Image Slider Column ──────────────────────── */}
-          <div className="about-slider-col" ref={sliderRef}>
-            <div className="about-slider">
-              {/* Slides */}
-              {SLIDES.map((slide, i) => (
-                <img
-                  key={i}
-                  ref={el => (slidesRef.current[i] = el)}
-                  src={slide.src}
-                  alt={slide.caption}
-                  className="about-slide-img"
-                  style={{
-                    zIndex:    i === 0 ? 1 : 0,
-                    transform: i === 0 ? 'translateX(0%)' : 'translateX(100%)',
-                    opacity:   1,
-                  }}
-                />
-              ))}
-
-              {/* Overlay gradient */}
-              <div className="about-slider-overlay" />
-
-              {/* Caption */}
-              <div className="about-slide-caption" ref={captionRef}>
-                {SLIDES[current].caption}
-              </div>
-
-              {/* Gold border frame */}
-              <div className="about-slider-frame" />
-            </div>
-
-            {/* Dot nav */}
-            <div className="about-dots">
-              {SLIDES.map((_, i) => (
-                <button
-                  key={i}
-                  ref={el => (dotsRef.current[i] = el)}
-                  className="about-dot"
-                  style={{
-                    width:           i === 0 ? 28 : 8,
-                    backgroundColor: i === 0 ? 'var(--color-gold)' : 'rgba(212,168,75,0.3)',
-                  }}
-                  onClick={() => handleDot(i)}
-                  aria-label={`Go to slide ${i + 1}`}
-                />
-              ))}
-            </div>
-          </div>
-
         </div>
       </div>
+
     </section>
   )
 }

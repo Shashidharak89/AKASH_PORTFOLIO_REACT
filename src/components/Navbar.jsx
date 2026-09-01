@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { gsap } from 'gsap'
-import { FiMenu, FiX, FiMail, FiFilm } from 'react-icons/fi'
+import { FiMenu, FiX, FiMail } from 'react-icons/fi'
+import faviconImg from '../assets/images/favicon.png'
 
 const NAV_LINKS = [
   { label: 'About',    href: '#about'   },
@@ -41,7 +42,7 @@ export default function Navbar() {
       {/* ── Top bar ─────────────────────────────────────────── */}
       <nav className={`navbar${scrolled ? ' scrolled' : ''}`} ref={navRef}>
         <a className="navbar-logo" href="#home" onClick={e => go(e, '#home')} aria-label="Home">
-          <FiFilm className="navbar-logo-icon" />
+          <img src={faviconImg} alt="Akash Kulal Logo" className="navbar-logo-img" />
           <span>AK</span>
         </a>
 
@@ -78,7 +79,7 @@ export default function Navbar() {
         </button>
 
         <div className="mobile-brand-block">
-          <FiFilm className="mobile-brand-icon" />
+          <img src={faviconImg} alt="Akash Kulal Logo" className="mobile-brand-img" />
           <span className="mobile-brand">AKASH KULAL</span>
           <span className="mobile-brand-sub">Creative Video Editor</span>
         </div>

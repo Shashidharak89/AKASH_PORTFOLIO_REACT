@@ -17,19 +17,19 @@ import reel10 from '../assets/reels/reel10.mp4'
 gsap.registerPlugin(ScrollTrigger)
 
 const reels = [
-  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured',  featured: true  },
-  { src: reel2,  label: 'Bus Edit',          badge: 'Popular'                    },
-  { src: reel3,  label: 'Vehicle Edit',      badge: ''                           },
-  { src: reel4,  label: 'Event Highlights',  badge: ''                           },
-  { src: reel5,  label: 'Housewarming',      badge: '300K Views', wide: true     },
-  { src: reel6,  label: 'Creative Cut',      badge: 'New'                        },
-  { src: reel7,  label: 'Pooja Ceremony',    badge: ''                           },
-  { src: reel8,  label: 'Creative Reel',     badge: 'Trending'                   },
-  { src: reel9,  label: 'Event Edit',        badge: ''                           },
-  { src: reel10, label: 'Special Reel',      badge: 'New'                        },
+  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured' },
+  { src: reel2,  label: 'Bus Edit',          badge: 'Popular'  },
+  { src: reel3,  label: 'Vehicle Edit',      badge: ''         },
+  { src: reel4,  label: 'Event Highlights',  badge: ''         },
+  { src: reel5,  label: 'Housewarming',      badge: '300K Views' },
+  { src: reel6,  label: 'Creative Cut',      badge: 'New'      },
+  { src: reel7,  label: 'Pooja Ceremony',    badge: ''         },
+  { src: reel8,  label: 'Creative Reel',     badge: 'Trending' },
+  { src: reel9,  label: 'Event Edit',        badge: ''         },
+  { src: reel10, label: 'Special Reel',      badge: 'New'      },
 ]
 
-/* ─── Single reel card ──────────────────────────────────────── */
+/* ─── Single 9:16 reel card ──────────────────────────────────── */
 function ReelCard({ reel, index, onPlay }) {
   const cardRef  = useRef(null)
   const videoRef = useRef(null)
@@ -48,7 +48,7 @@ function ReelCard({ reel, index, onPlay }) {
     )
   }, [index])
 
-  /* IntersectionObserver — auto-play when ≥40% visible */
+  /* IntersectionObserver — auto-play when ≥35% visible */
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
@@ -57,7 +57,7 @@ function ReelCard({ reel, index, onPlay }) {
         if (entry.isIntersecting) video.play().catch(() => {})
         else                      video.pause()
       },
-      { threshold: 0.4 }
+      { threshold: 0.35 }
     )
     observer.observe(video)
     return () => observer.disconnect()
@@ -66,13 +66,13 @@ function ReelCard({ reel, index, onPlay }) {
   return (
     <div
       ref={cardRef}
-      className={`reel-card${reel.featured ? ' featured' : ''}${reel.wide ? ' wide' : ''}`}
+      className="reel-card-916"
       style={{ opacity: 0 }}
       onClick={() => onPlay(reel.src)}
     >
       <video
         ref={videoRef}
-        className="reel-video"
+        className="reel-video-916"
         src={reel.src}
         muted
         loop
@@ -90,7 +90,7 @@ function ReelCard({ reel, index, onPlay }) {
       </div>
 
       {/* Expand hint on hover */}
-      <div className="reel-play-btn" aria-hidden="true">
+      <div className="reel-play-btn" aria-label="Play Reel">
         <FiMaximize2 className="reel-expand-icon" />
       </div>
     </div>
@@ -126,25 +126,30 @@ export default function Reels() {
     return () => window.removeEventListener('keydown', handler)
   }, [])
 
-  /* Animate modal open */
+  /* Animate modal open & lock body scroll */
   useEffect(() => {
-    if (activeVideo && modalRef.current) {
-      gsap.fromTo(modalRef.current,
-        { opacity: 0 },
-        { opacity: 1, duration: 0.3, ease: 'power2.out' }
-      )
-      gsap.fromTo(modalRef.current.querySelector('.video-modal-content'),
-        { scale: 0.88, y: 30 },
-        { scale: 1,    y: 0,  duration: 0.45, ease: 'back.out(1.4)' }
-      )
-      // Animate close button in
-      if (closeBtnRef.current) {
-        gsap.fromTo(closeBtnRef.current,
-          { opacity: 0, scale: 0.5, rotate: -90 },
-          { opacity: 1, scale: 1,   rotate: 0, duration: 0.4, delay: 0.2, ease: 'back.out(2)' }
+    if (activeVideo) {
+      document.body.style.overflow = 'hidden'
+      if (modalRef.current) {
+        gsap.fromTo(modalRef.current,
+          { opacity: 0 },
+          { opacity: 1, duration: 0.3, ease: 'power2.out' }
         )
+        gsap.fromTo(modalRef.current.querySelector('.video-modal-container'),
+          { scale: 0.85, y: 40 },
+          { scale: 1,    y: 0,  duration: 0.45, ease: 'back.out(1.3)' }
+        )
+        if (closeBtnRef.current) {
+          gsap.fromTo(closeBtnRef.current,
+            { opacity: 0, scale: 0.5, rotate: -90 },
+            { opacity: 1, scale: 1,   rotate: 0, duration: 0.4, delay: 0.15, ease: 'back.out(2)' }
+          )
+        }
       }
+    } else {
+      document.body.style.overflow = ''
     }
+    return () => { document.body.style.overflow = '' }
   }, [activeVideo])
 
   const handlePlay = (src) => setActiveVideo(src)
@@ -168,41 +173,46 @@ export default function Reels() {
           <h2 className="section-title">
             My Creative <span className="gold-text">Work</span>
           </h2>
-          <p>Auto-plays as you scroll · Click to watch full screen · Every frame tells a story</p>
+          <p>Auto-plays as you scroll · Click to expand 9:16 fullscreen · Every frame tells a story</p>
         </div>
 
-        <div className="reels-grid">
+        {/* 9:16 Responsive Grid */}
+        <div className="reels-grid-916">
           {reels.map((reel, i) => (
             <ReelCard key={i} reel={reel} index={i} onPlay={handlePlay} />
           ))}
         </div>
       </div>
 
-      {/* ── Video Modal ── */}
+      {/* ── 9:16 Fullscreen Vertical Video Modal ── */}
       {activeVideo && (
         <div
           className="video-modal-backdrop open"
           ref={modalRef}
           onClick={(e) => { if (e.target === e.currentTarget) handleClose() }}
         >
-          <div className="video-modal-content">
-            {/* Prominent close button */}
+          <div className="video-modal-container">
+            {/* Prominent floating close button */}
             <button
               ref={closeBtnRef}
-              className="modal-close-btn"
+              className="modal-close-btn-float"
               onClick={handleClose}
-              aria-label="Close video"
+              aria-label="Close fullscreen video"
             >
               <FiX className="modal-close-icon" />
             </button>
 
-            <video
-              ref={modalVideoRef}
-              src={activeVideo}
-              controls
-              autoPlay
-              playsInline
-            />
+            {/* 9:16 Vertical Video Player */}
+            <div className="video-player-wrapper-916">
+              <video
+                ref={modalVideoRef}
+                src={activeVideo}
+                controls
+                autoPlay
+                playsInline
+                className="modal-video-916"
+              />
+            </div>
           </div>
         </div>
       )}
