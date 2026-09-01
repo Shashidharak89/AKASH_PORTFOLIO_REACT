@@ -17,22 +17,23 @@ import reel10 from '../assets/reels/reel10.mp4'
 gsap.registerPlugin(ScrollTrigger)
 
 const reels = [
-  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured' },
-  { src: reel2,  label: 'Bus Edit',          badge: 'Popular'  },
-  { src: reel3,  label: 'Vehicle Edit',      badge: ''         },
-  { src: reel4,  label: 'Event Highlights',  badge: ''         },
-  { src: reel5,  label: 'Housewarming',      badge: '300K Views' },
-  { src: reel6,  label: 'Creative Cut',      badge: 'New'      },
-  { src: reel7,  label: 'Pooja Ceremony',    badge: ''         },
-  { src: reel8,  label: 'Creative Reel',     badge: 'Trending' },
-  { src: reel9,  label: 'Event Edit',        badge: ''         },
-  { src: reel10, label: 'Special Reel',      badge: 'New'      },
+  { src: reel1,  label: 'Cinematic Reel',    badge: 'Featured', type: 'featured' },
+  { src: reel2,  label: 'Bus Edit',          badge: 'Popular',  type: 'tall'     },
+  { src: reel3,  label: 'Vehicle Edit',      badge: '',         type: 'standard' },
+  { src: reel4,  label: 'Event Highlights',  badge: '',         type: 'wide'     },
+  { src: reel5,  label: 'Housewarming',      badge: '300K Views',type: 'wide'    },
+  { src: reel6,  label: 'Creative Cut',      badge: 'New',      type: 'tall'     },
+  { src: reel7,  label: 'Pooja Ceremony',    badge: '',         type: 'standard' },
+  { src: reel8,  label: 'Creative Reel',     badge: 'Trending', type: 'featured' },
+  { src: reel9,  label: 'Event Edit',        badge: '',         type: 'standard' },
+  { src: reel10, label: 'Special Reel',      badge: 'New',      type: 'wide'     },
 ]
 
-/* ─── Single 9:16 reel card ──────────────────────────────────── */
+/* ─── Customized Bento Reel Card ─────────────────────────────── */
 function ReelCard({ reel, index, onPlay }) {
   const cardRef  = useRef(null)
   const videoRef = useRef(null)
+  const [isHovered, setIsHovered] = useState(false)
 
   /* GSAP entrance */
   useEffect(() => {
@@ -48,31 +49,59 @@ function ReelCard({ reel, index, onPlay }) {
     )
   }, [index])
 
-  /* IntersectionObserver — auto-play when ≥35% visible */
+  /* IntersectionObserver + Hover Play Logic */
   useEffect(() => {
     const video = videoRef.current
     if (!video) return
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) video.play().catch(() => {})
-        else                      video.pause()
+        if (entry.isIntersecting) {
+          // Play automatically once visible in view
+          const playPromise = video.play()
+          if (playPromise !== undefined) {
+            playPromise.catch(() => {
+              // Fallback if browser blocks un-interacted autoplay
+            })
+          }
+        } else {
+          video.pause()
+        }
       },
-      { threshold: 0.35 }
+      { threshold: 0.25 }
     )
+
     observer.observe(video)
     return () => observer.disconnect()
   }, [])
 
+  const handleMouseEnter = () => {
+    setIsHovered(true)
+    const video = videoRef.current
+    if (video) {
+      if (video.readyState < 2) {
+        video.load()
+      }
+      video.play().catch(() => {})
+    }
+  }
+
+  const handleMouseLeave = () => {
+    setIsHovered(false)
+  }
+
   return (
     <div
       ref={cardRef}
-      className="reel-card-916"
+      className={`bento-reel-card bento-${reel.type}${isHovered ? ' hovered' : ''}`}
       style={{ opacity: 0 }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onClick={() => onPlay(reel.src)}
     >
       <video
         ref={videoRef}
-        className="reel-video-916"
+        className="bento-reel-video"
         src={reel.src}
         muted
         loop
@@ -89,8 +118,8 @@ function ReelCard({ reel, index, onPlay }) {
         </div>
       </div>
 
-      {/* Expand hint on hover */}
-      <div className="reel-play-btn" aria-label="Play Reel">
+      {/* Expand hint icon on hover */}
+      <div className="reel-play-btn" aria-label="Expand Reel">
         <FiMaximize2 className="reel-expand-icon" />
       </div>
     </div>
@@ -173,18 +202,18 @@ export default function Reels() {
           <h2 className="section-title">
             My Creative <span className="gold-text">Work</span>
           </h2>
-          <p>Auto-plays as you scroll · Click to expand 9:16 fullscreen · Every frame tells a story</p>
+          <p>Hover to load &amp; preview · Click to open 9:16 vertical fullscreen player</p>
         </div>
 
-        {/* 9:16 Responsive Grid */}
-        <div className="reels-grid-916">
+        {/* Customized Bento Layout Grid */}
+        <div className="bento-reels-grid">
           {reels.map((reel, i) => (
             <ReelCard key={i} reel={reel} index={i} onPlay={handlePlay} />
           ))}
         </div>
       </div>
 
-      {/* ── 9:16 Fullscreen Vertical Video Modal ── */}
+      {/* ── 9:16 Fullscreen Vertical Video Modal Player ── */}
       {activeVideo && (
         <div
           className="video-modal-backdrop open"
